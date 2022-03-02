@@ -1,4 +1,4 @@
-package uz.fazliddin.util;
+package uz.fazliddin.ignore;
 
 /**
  * @author Fazliddin Xamdamov
