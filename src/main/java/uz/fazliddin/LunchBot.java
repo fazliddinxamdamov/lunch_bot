@@ -8,7 +8,7 @@ import uz.fazliddin.service.HelperMethods;
 import uz.fazliddin.service.RegistrationService;
 import uz.fazliddin.util.DataBase;
 
-import static uz.fazliddin.ignore.Constants.*;
+import static uz.fazliddin.util.Constants.*;
 /**
  * @author Fazliddin Xamdamov
  * @date 01.03.2022  16:04

@@ -3,7 +3,7 @@ package uz.fazliddin.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import static uz.fazliddin.ignore.Constants.*;
+import static uz.fazliddin.util.Constants.*;
 
 /**
  * @author Fazliddin Xamdamov
