@@ -92,6 +92,7 @@ public class RegistrationService {
         }
     }
 
+
     //round 1
     public void getFullName(User currentUser, Update update) {
         UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
