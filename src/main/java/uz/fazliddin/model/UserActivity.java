@@ -17,5 +17,6 @@ import lombok.Setter;
 public class UserActivity {
 
     private Integer round = 0;
+//    private String choice;
 
 }

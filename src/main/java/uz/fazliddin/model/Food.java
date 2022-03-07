@@ -1,6 +1,7 @@
 package uz.fazliddin.model;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -16,6 +17,5 @@ import java.time.LocalDateTime;
 public class Food {
     private Integer id;
     private String name;
-    private LocalDateTime sendByCook = LocalDateTime.now();
-    private Integer quantity;
+    private LocalDateTime timestamp = LocalDateTime.now();
 }

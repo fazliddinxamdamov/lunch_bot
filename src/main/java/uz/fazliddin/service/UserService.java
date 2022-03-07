@@ -1,9 +1,183 @@
 package uz.fazliddin.service;
 
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import uz.fazliddin.LunchBot;
+import uz.fazliddin.model.Food;
+import uz.fazliddin.model.User;
+import uz.fazliddin.model.UserActivity;
+import uz.fazliddin.model.UserFood;
+import uz.fazliddin.service.templete.Keyboard;
+import uz.fazliddin.util.DB;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Fazliddin Xamdamov
  * @date 02.03.2022  15:56
  * @project New-Lunch-Bot2
  */
 public class UserService {
+
+    Keyboard keyboard = new Keyboard();
+
+    public void userServiceMainMethod(User currentUser, Update update, UserActivity userActivity, UserFood userFood) {
+
+        if (update.hasMessage()) {
+            Message message = update.getMessage();
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(message.getChatId().toString());
+            if (message.hasText()) {
+                String text = message.getText();
+                if (text.equals("/start")) {
+                    sendMessageUser(currentUser, "Asosiy menu", true, userActivity);
+//                    sendMessage.setReplyMarkup(getReplyKeyBoard(currentUser, userActivity));
+                } else if (text.equals("Orqaga")) {
+                    sendMessageUser(currentUser, "Orqaga yurdingiz", true, userActivity);
+                    userActivity.setRound(userActivity.getRound() - 1);
+                } else if (text.equals("Bugungi ovqatlar")) {
+                    userActivity.setRound(1);
+                    sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati", true, userActivity);
+                }
+//                else if (text.equals("Vaqt oralig'ini tanlash")) {
+//                    userActivity.setRound(2);
+//                    sendMessageUser(currentUser, "Qaysi vaqtda ovqatlanishingiz", true, userActivity);
+//                }
+                else if (text.equals("Settings")) {
+                    userActivity.setRound(3);
+                    sendMessageUser(currentUser, "Profil sozlamalari", true, userActivity);
+                } else if (text.equals("Bosh menu")) {
+                    userActivity.setRound(0);
+                    sendMessageUser(currentUser, "Bosh menuga qaytdingiz", true, userActivity);
+                } else {
+                    for (Food food : DB.footList()) {
+                        if (text.equals(food.getName())) {
+                            userFood.setFoodId(food.getId());
+                            userFood.setUserId(currentUser.getId());
+                            userFood.setKuni(LocalDateTime.now());
+                            DB.addFoodToUser(userFood);
+                            sendMessageUser(currentUser, "Ovqat belgilandi", true, userActivity);
+                            userActivity.setRound(5);
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+//
+//    private void chooseFood(User currentUser, Update update, UserActivity userActivity) {
+//        if (update.hasMessage() && update.getMessage().hasText()) {
+//            currentUser.setDepartment(update.getMessage().getText());
+//            userActivity.setRound(2);
+//            sendMessageUser(currentUser, "ovqatlar ro'yxati:", true, userActivity);
+//        }
+//    }
+
+    private ReplyKeyboard getReplyKeyBoard(User currentUser, UserActivity userActivity) {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setResizeKeyboard(true);
+        keyboardMarkup.setOneTimeKeyboard(true);
+
+        List<KeyboardRow> rowList = new ArrayList<>();
+        keyboardMarkup.setKeyboard(rowList);
+        KeyboardRow row1 = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardRow row3 = new KeyboardRow();
+        KeyboardRow rowN = new KeyboardRow();
+
+        switch (userActivity.getRound()) {
+            case 0:
+//                row1.add("Vaqt oralig'ini tanlash");
+//                row2.add("Buyurtmamni bekor qilish");
+                row1.add("Bugungi ovqatlar");
+                row2.add("Settings");
+                rowList.add(row1);
+                rowList.add(row2);
+                break;
+            case 1:
+                List<Food> foods = DB.footList();
+                int cycle = 1;
+                int k = 0;
+                for (int i = 0; i < cycle; i++) {
+                    for (int j = 0; j <= foods.size(); j++) {
+                        if (k <= 3) {
+                            assert foods.get(k) != null;
+                            row1.add(new KeyboardButton(foods.get(k).getName()));
+                            if (k == foods.size() - 1) {
+                                break;
+                            }
+                            k++;
+                        } else {
+                            row2.add(new KeyboardButton(foods.get(k).getName()));
+                            if (k == foods.size() - 1) {
+                                break;
+                            }
+                            k++;
+                        }
+
+                    }
+                    rowN.add("Orqaga");
+                    rowList.add(row1);
+                    rowList.add(row2);
+                    rowList.add(rowN);
+                }
+                break;
+//            case 2:
+//                row1.add("12:00 | 12:20");
+//                row1.add("12:20 | 12:40");
+//                row2.add("12:40 | 13:00");
+//                row2.add("13:00 | 13:20");
+//                row3.add("13:20 | 13:40");
+//                row3.add("13:40 | 14:00");
+//                rowN.add("Orqaga");
+//                rowList.add(row1);
+//                rowList.add(row2);
+//                rowList.add(row3);
+//                rowList.add(rowN);
+//                break;
+            case 3:
+                row1.add("Hozircha sozlamalar paneli ishga tushgani yo'q! :( ");
+                rowN.add("Orqaga");
+                rowList.add(row1);
+                rowList.add(rowN);
+                break;
+            case 4:
+            case 5:
+                row1.add("Bosh menu");
+                rowN.add("Orqaga");
+                rowList.add(row1);
+                rowList.add(rowN);
+                break;
+        }
+        return keyboardMarkup;
+    }
+
+    public void sendMessageUser(User currentUser, String text, boolean is_replyMarkUp, UserActivity userActivity) {
+        LunchBot myBot = new LunchBot();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(currentUser.getChatId());
+        if (is_replyMarkUp) {
+            sendMessage.setReplyMarkup(getReplyKeyBoard(currentUser, userActivity));
+        }
+        sendMessage.setText(text);
+        try {
+            myBot.execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+//    public int getUserRound(User currentUser) {
+//        UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
+//        return userActivity.getRound();
+//    }
 }

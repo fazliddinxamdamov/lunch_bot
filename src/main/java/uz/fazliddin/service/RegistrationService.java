@@ -7,8 +7,6 @@ import uz.fazliddin.model.UserActivity;
 import uz.fazliddin.util.DB;
 import uz.fazliddin.util.DataBase;
 
-import java.util.SplittableRandom;
-
 /**
  * @author Fazliddin Xamdamov
  * @date 01.03.2022  16:19
@@ -35,6 +33,7 @@ public class RegistrationService {
                 break;
             case 4:
                 finishRegistration(currentUser , update , userActivity);
+//                helperMethods.sendMessage(currentUser, "Asosiy menu:" , true);
                 if (currentUser.getUserStatus().equals("USER")) currentUser.setRound(10);
                 if (currentUser.getUserStatus().equals("HR")) currentUser.setRound(30);
                 if (currentUser.getUserStatus().equals("ADMIN")) currentUser.setRound(60);
@@ -42,15 +41,14 @@ public class RegistrationService {
                 DataBase.userActivityMap.put(currentUser.getChatId(), new UserActivity(5));
                 break;
         }
-
-
     }
 
     private void finishRegistration(User currentUser, Update update, UserActivity userActivity) {
         if (update.hasMessage() && update.getMessage().hasText()){
             currentUser.setPosition(update.getMessage().getText());
-            currentUser.setRegister(true);   // registratsiya tugadi , isRegiter = true;
+            currentUser.setRound(5);// registratsiya tugadi , isRegiter = true;
             userActivity.setRound(5);
+            currentUser.setRegister(true);
             helperMethods.sendMessage(currentUser, "Asosiy menu:" , true);
             userActivity.setRound(6);
         }
@@ -72,7 +70,6 @@ public class RegistrationService {
         }
     }
 
-
     public void getPhoneNumber(User currentUser, Update update){
         UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
         if (currentUser.getPhoneNumber() == null){
@@ -91,14 +88,15 @@ public class RegistrationService {
             }
         }
     }
-
-
     //round 1
     public void getFullName(User currentUser, Update update) {
         UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
         if (update.getMessage().hasContact()){
             Contact contact = update.getMessage().getContact();
             currentUser.setPhoneNumber(contact.getPhoneNumber());
+        } else {
+            helperMethods.sendMessage(currentUser,"Kontaktni jo'natish kerak edi",true);
+            userActivity.setRound(1);
         }
 
         helperMethods.sendMessage(currentUser, "To'liq ismi sharifingizni quyidagi ko'rinishda kiriting\n" +
@@ -106,6 +104,4 @@ public class RegistrationService {
                 "Ism Familya" , true);
         userActivity.setRound(2);
     }
-
-
 }

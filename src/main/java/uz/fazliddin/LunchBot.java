@@ -2,13 +2,16 @@ package uz.fazliddin;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import uz.fazliddin.model.Food;
 import uz.fazliddin.model.User;
 import uz.fazliddin.model.UserActivity;
-import uz.fazliddin.service.HelperMethods;
-import uz.fazliddin.service.RegistrationService;
+import uz.fazliddin.model.UserFood;
+import uz.fazliddin.service.*;
 import uz.fazliddin.util.DataBase;
 
-import static uz.fazliddin.util.Constants.*;
+import static uz.fazliddin.util.Constants.TOKEN;
+import static uz.fazliddin.util.Constants.USERNAME;
+
 /**
  * @author Fazliddin Xamdamov
  * @date 01.03.2022  16:04
@@ -16,9 +19,12 @@ import static uz.fazliddin.util.Constants.*;
  */
 public class LunchBot extends TelegramLongPollingBot {
 
-//    RoundMethods roundMethods = new RoundMethods();
+    //    RoundMethods roundMethods = new RoundMethods();
     HelperMethods helperMethods = new HelperMethods();
     RegistrationService registrationService = new RegistrationService();
+    UserService userService = new UserService();
+    HrService hrService = new HrService();
+    AdminService adminService = new AdminService();
 
     @Override
     public String getBotUsername() {
@@ -35,47 +41,50 @@ public class LunchBot extends TelegramLongPollingBot {
 
         User currentUser = DataBase.getUserFromList(update);
         UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
+        UserActivity userActivityForUser = new UserActivity();// boshlanishi 0 dan boshlanadi
+//        userActivityForUser.setChoice("ovqat");
 
-        if (currentUser.getPhoneNumber() != null && update.getMessage().hasText() && update.getMessage().getText().equals("/start")){
-            userActivity.setRound(5);
-            helperMethods.sendMessage(currentUser, "Asosiy Menu" , true);
-            userActivity.setRound(6);
+        if (currentUser.isRegister()) {
+            switch (currentUser.getUserStatus()) {
+                case "USER":
+                    UserService userService = new UserService();
+                    UserFood userFood = new UserFood();
+                    userService.userServiceMainMethod(currentUser, update, userActivityForUser , userFood );
+                    break;
+                case "HR":
+                    //  todo hr serviceni qilish kerak
+                    break;
+                case "ADMIN":
+                    //  todo admin serviceni qilish kerak
+                    break;
+
+            }
+//            helperMethods.sendMessage(currentUser, "Asosiy Menu", true);
+        } else {
+            if (currentUser.getPhoneNumber() != null && update.getMessage().hasText() && update.getMessage().getText().equals("/start")) {
+                userActivity.setRound(5);
+                helperMethods.sendMessage(currentUser, "Asosiy Menu", true);
+                userActivity.setRound(6);
+            }
+
+            if (userActivity.getRound() < 5) {
+                registrationService.startRegistration(currentUser, update, userActivity);
+            }
         }
-
-        if (userActivity.getRound() < 5){
-            registrationService.startRegistration(currentUser , update , userActivity);
-        }
-
-//        switch (userActivity.getRound()){
-//            case 0:
-//                roundMethods.registerProcess(currentUser, update);
-//                break;
-//            case 1:
-//                roundMethods.confirmContact(currentUser, update);
-//                break;
-//            case 2:
-//                roundMethods.selectFromMainMenu(currentUser, update);
-//                break;
-//            case 3:
-//                roundMethods.selectingCategory(currentUser, update);
-//                break;
-//            case 4:
-//                roundMethods.selectingBook(currentUser, update);
-//                break;
-//            case 5:
-//                roundMethods.deciding(currentUser, update); //qaror qabul qilyabdi, sotib olaymi yoki yuqmi
-//                break;
-//            case 6:
-//                roundMethods.selectingPayType(currentUser, update);
-//                break;
-//            case 7:
-//                roundMethods.deciding2(currentUser, update); //qaror qabul qilyabdi, sotib olaymi yoki yuqmi pul to'lash jarayoni!
-//                break;
-//            case 8:
-//                roundMethods.confirmLocation(currentUser, update); //qaror qabul qilyabdi, sotib olaymi yoki yuqmi pul to'lash jarayoni!
-//                break;
+        // user bo'lsa
+//        if (currentUser.isRegister()) {
+//            if (currentUser.getUserStatus().equals("USER")) {
+//                userActivity.setRound(0);
+//                userService.userServiceMainMethod(currentUser, update, userActivity);
+//            } else if (currentUser.getUserStatus().equals("ADMIN")) {
+//                UserActivity userActivityAdmin = new UserActivity();
+//                userActivityAdmin.setRound(0);
+//                adminService.adminServiceMainMethod(currentUser,update,userActivityAdmin);
+//            } else if (currentUser.getUserStatus().equals("HR")){
+//                UserActivity userActivityAdmin = new UserActivity();
+//                userActivityAdmin.setRound(0);
+//                hrService.adminServiceMainMethod(currentUser,update,userActivityAdmin);
+//            }
 //        }
-
-
-    }
+     }
 }

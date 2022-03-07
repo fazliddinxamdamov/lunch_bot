@@ -1,11 +1,15 @@
 package uz.fazliddin.util;
 
+import uz.fazliddin.model.Food;
 import uz.fazliddin.model.User;
+import uz.fazliddin.model.UserFood;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +20,7 @@ import java.util.List;
  */
 public class DB {
 
-    public static List<User> allUser(){
+    public static List<User> allUser() {
         Connection connection = DbConnect.getConnection();
         PreparedStatement preparedStatement = null;
         List<User> userPeople = new ArrayList<>();
@@ -44,7 +48,7 @@ public class DB {
         return userPeople;
     }
 
-    public static void addUser(User user){
+    public static void addUser(User user) {
         Connection connection = DbConnect.getConnection();
         try {
             assert connection != null;
@@ -52,16 +56,78 @@ public class DB {
             preparedStatement.setString(1, user.getFullName());
             preparedStatement.setString(2, user.getChatId());
             preparedStatement.setString(3, user.getPhoneNumber());
-            preparedStatement.setString(4,user.getUserStatus());
+            preparedStatement.setString(4, user.getUserStatus());
             preparedStatement.setBoolean(5, user.isRegister());
             preparedStatement.setString(6, user.getDepartment());
             preparedStatement.setString(7, user.getPosition());
-            preparedStatement.setInt(8,user.getRound());
+            preparedStatement.setInt(8, user.getRound());
 
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<Food> footList() {
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        List<Food> foods = new ArrayList<>();
+        try {
+            assert connection != null;
+            LocalDate localDate = LocalDate.now();
+            preparedStatement = connection.prepareStatement("select * from foods f where cast(f.kuni as date) = " + " '" + localDate + "'");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                foods.add(new Food(
+                        resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getObject(3, LocalDateTime.class)
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return foods;
+    }
+
+    public static void addFoodToUser(UserFood userFood) {
+        Connection connection = DbConnect.getConnection();
+        try {
+            assert connection != null;
+            PreparedStatement preparedStatement = connection.prepareStatement("insert into user_food( user_id, food_id, kuni) values (?,?,?)");
+            preparedStatement.setInt(1, userFood.getUserId());
+            preparedStatement.setInt(2, userFood.getFoodId());
+            preparedStatement.setObject(3, userFood.getKuni());
+//            preparedStatement.setString(4, userFood.getLunchTime());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<UserFood> userFoodList() {
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        List<UserFood> userFoods = new ArrayList<>();
+        try {
+            assert connection != null;
+            LocalDate localDate = LocalDate.now();
+            preparedStatement = connection.prepareStatement("select * from user_food f where cast(f.kuni as date) = " + " '" + localDate + "'");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                userFoods.add(new UserFood(
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getObject(4, LocalDateTime.class)
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userFoods;
     }
 
 

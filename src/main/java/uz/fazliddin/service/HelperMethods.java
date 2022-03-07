@@ -39,7 +39,6 @@ public class HelperMethods {
     }
 
     private ReplyKeyboard getReplyKeyBoard(User currentUser) {
-
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setOneTimeKeyboard(true);
@@ -51,11 +50,9 @@ public class HelperMethods {
         KeyboardRow row3 = new KeyboardRow();
         KeyboardRow rowN = new KeyboardRow();
 
-        UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
-        int round = userActivity.getRound();
+        int round = getUserRound(currentUser);
 
         switch (round) {
-
             case 0:
                 KeyboardButton button = new KeyboardButton();
                 button.setText("Raqamni jo'natish"); // share contact
@@ -83,37 +80,50 @@ public class HelperMethods {
                 rowList.add(row1);
                 rowList.add(row2);
                 break;
-            case 5:
-                switch (currentUser.getUserStatus()) {
-                    case "USER":
-                        row1.add("Vaqt oralig'ini tanlash");
-                        row1.add("bugungi ovqatlar");
-                        row2.add("buyurtmamni bekor qilish");
-                        row2.add("settings");
-                        rowList.add(row1);
-                        rowList.add(row2);
-                        break;
-                    case "ADMIN":
-                        row1.add("Vaqt oralig'ini tanlash");
-                        row1.add("bugungi ovqatlar");
-                        row2.add("buyurtmamni bekor qilish");
-                        row2.add("settings");
-                        rowN.add("bugunli ro'yxatni korish");
-                        rowN.add("ro'yxatni HR ga jo'nstish");
-                        rowList.add(row1);
-                        rowList.add(row2);
-                        rowList.add(rowN);
-                        break;
-                    case "HR":
-                        row1.add("bugunli ro'yxatni korish");
-                        row1.add("ro'yxatni qubul qilish");
-                        row2.add("ro'yxatni exelga chiqarish");
-                        row2.add("settings");
-                        break;
-                }
-                break;
+        }
+        if (round >= 5) {
+            switch (currentUser.getUserStatus()) {
+                case "USER":
+                    row1.add("Vaqt oralig'ini tanlash");
+                    row1.add("Bugungi ovqatlar");
+                    row2.add("Buyurtmamni bekor qilish");
+                    row2.add("Settings");
+                    rowList.add(row1);
+                    rowList.add(row2);
+                    break;
+                case "ADMIN":
+                    row1.add("Vaqt oralig'ini tanlash");
+                    row1.add("Bugungi ovqatlar");
+                    row2.add("Buyurtmamni bekor qilish");
+                    row2.add("Settings");
+                    rowN.add("Bugunli ro'yxatni korish");
+                    rowN.add("Ro'yxatni HR ga jo'natish");
+                    rowList.add(row1);
+                    rowList.add(row2);
+                    rowList.add(rowN);
+                    break;
+                case "HR":
+                    row1.add("Bugungi ro'yxatni korish");
+                    row1.add("Ro'yxatni qubul qilish");
+                    row2.add("Ro'yxatni exelga chiqarish");
+                    row2.add("Settings");
+                    rowList.add(row1);
+                    rowList.add(row2);
+                    break;
+
+            }
         }
         return keyboardMarkup;
     }
 
+    public int getUserRound(User currentUser){
+        if (currentUser.isRegister()){
+            return currentUser.getRound();
+        }else {
+            UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
+            return userActivity.getRound();
+        }
+    }
+
 }
+
