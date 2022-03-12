@@ -20,6 +20,8 @@ import java.util.List;
  */
 public class DB {
 
+    // USER
+
     public static List<User> allUser() {
         Connection connection = DbConnect.getConnection();
         PreparedStatement preparedStatement = null;
@@ -68,6 +70,84 @@ public class DB {
         }
     }
 
+    public static User getUserFromId(Integer id) {
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        User user = new User();
+        try {
+            assert connection != null;
+            preparedStatement = connection.prepareStatement("select * from users where id = " + id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                user.setId(resultSet.getInt(1));
+                user.setFullName(resultSet.getString(2));
+                user.setChatId(resultSet.getString(3));
+                user.setPhoneNumber(resultSet.getString(4));
+                user.setUserStatus(resultSet.getString(5));
+                user.setRegister(resultSet.getBoolean(6));
+                user.setDepartment(resultSet.getString(7));
+                user.setPosition(resultSet.getString(8));
+                user.setRound(resultSet.getInt(9));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public static User getUserFromChatId(Integer charId) {
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        User user = new User();
+        try {
+            assert connection != null;
+            preparedStatement = connection.prepareStatement("select * from users where chat_id = " + charId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                user.setId(resultSet.getInt(1));
+                user.setFullName(resultSet.getString(2));
+                user.setChatId(resultSet.getString(3));
+                user.setPhoneNumber(resultSet.getString(4));
+                user.setUserStatus(resultSet.getString(5));
+                user.setRegister(resultSet.getBoolean(6));
+                user.setDepartment(resultSet.getString(7));
+                user.setPosition(resultSet.getString(8));
+                user.setRound(resultSet.getInt(9));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public static User getUserFromPosition(String positionName) {
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        User user = new User();
+        try {
+            assert connection != null;
+            preparedStatement = connection.prepareStatement("select * from users where position = " + positionName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                user.setId(resultSet.getInt(1));
+                user.setFullName(resultSet.getString(2));
+                user.setChatId(resultSet.getString(3));
+                user.setPhoneNumber(resultSet.getString(4));
+                user.setUserStatus(resultSet.getString(5));
+                user.setRegister(resultSet.getBoolean(6));
+                user.setDepartment(resultSet.getString(7));
+                user.setPosition(resultSet.getString(8));
+                user.setRound(resultSet.getInt(9));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+
+    // FOOD
+
     public static List<Food> footList() {
         Connection connection = DbConnect.getConnection();
         PreparedStatement preparedStatement = null;
@@ -91,15 +171,36 @@ public class DB {
         return foods;
     }
 
+    public static Food getFood(Integer id) {
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        Food food = new Food();
+        try {
+            assert connection != null;
+            preparedStatement = connection.prepareStatement("select * from foods where id = " + id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                food.setId(resultSet.getInt(1));
+                food.setName(resultSet.getString(2));
+                food.setTimestamp(resultSet.getObject(3, LocalDateTime.class));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return food;
+    }
+
+
+    // FOOD USER
     public static void addFoodToUser(UserFood userFood) {
         Connection connection = DbConnect.getConnection();
         try {
             assert connection != null;
-            PreparedStatement preparedStatement = connection.prepareStatement("insert into user_food( user_id, food_id, kuni) values (?,?,?)");
-            preparedStatement.setInt(1, userFood.getUserId());
-            preparedStatement.setInt(2, userFood.getFoodId());
-            preparedStatement.setObject(3, userFood.getKuni());
-//            preparedStatement.setString(4, userFood.getLunchTime());
+            PreparedStatement preparedStatement = connection.prepareStatement("insert into user_food( user_full_name,user_position, food_name, kuni) values (?,?,?,?)");
+            preparedStatement.setString(1, userFood.getUserFullName());
+            preparedStatement.setString(2, userFood.getUserPosition());
+            preparedStatement.setString(3, userFood.getFoodName());
+            preparedStatement.setObject(4, userFood.getKuni());
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,9 +219,10 @@ public class DB {
             while (resultSet.next()) {
                 userFoods.add(new UserFood(
                         resultSet.getInt(1),
-                        resultSet.getInt(2),
-                        resultSet.getInt(3),
-                        resultSet.getObject(4, LocalDateTime.class)
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getObject(5, LocalDateTime.class)
                 ));
             }
 
@@ -128,6 +230,18 @@ public class DB {
             e.printStackTrace();
         }
         return userFoods;
+    }
+
+    public static boolean isAddFoodUser(String userFullName) {
+        boolean res = true;
+        LocalDate now = LocalDate.now();
+        for (UserFood userFood : userFoodList()) {
+            if ((userFullName.equals(userFood.getUserFullName())) && userFood.getKuni().getMonthValue() == now.getMonthValue() && userFood.getKuni().getDayOfMonth() == now.getDayOfMonth()) {
+                res = false;
+                break;
+            }
+        }
+        return res;
     }
 
 

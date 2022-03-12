@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
 /**
  * @author Fazliddin Xamdamov
  * @date 03.03.2022  17:56
@@ -19,8 +18,9 @@ import java.time.LocalDateTime;
 @Setter
 public class UserFood {
     private Integer id;
-    private Integer userId;
-    private Integer foodId;
+    private String  userFullName;
+    private String userPosition;
+    private String  foodName;
     private LocalDateTime kuni;
 //    private String lunchTime;    // har doim ovqatlanadigan vaqti.
 }

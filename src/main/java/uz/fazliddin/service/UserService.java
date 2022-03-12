@@ -16,7 +16,9 @@ import uz.fazliddin.model.UserFood;
 import uz.fazliddin.service.templete.Keyboard;
 import uz.fazliddin.util.DB;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,11 +43,16 @@ public class UserService {
                     sendMessageUser(currentUser, "Asosiy menu", true, userActivity);
 //                    sendMessage.setReplyMarkup(getReplyKeyBoard(currentUser, userActivity));
                 } else if (text.equals("Orqaga")) {
-                    sendMessageUser(currentUser, "Orqaga yurdingiz", true, userActivity);
+                    sendMessageUser(currentUser, "Orqaga yurdingiz 🔙", true, userActivity);
                     userActivity.setRound(userActivity.getRound() - 1);
                 } else if (text.equals("Bugungi ovqatlar")) {
-                    userActivity.setRound(1);
-                    sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati", true, userActivity);
+                    if (DB.footList().isEmpty()){
+                        userActivity.setRound(0);
+                        sendMessageUser(currentUser , "Bugungi ovqatlar ro'yxati bo'sh ekan ❌" , true , userActivity);
+                    }else {
+                        userActivity.setRound(1);
+                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲", true, userActivity);
+                    }
                 }
 //                else if (text.equals("Vaqt oralig'ini tanlash")) {
 //                    userActivity.setRound(2);
@@ -53,27 +60,53 @@ public class UserService {
 //                }
                 else if (text.equals("Settings")) {
                     userActivity.setRound(3);
-                    sendMessageUser(currentUser, "Profil sozlamalari", true, userActivity);
+                    sendMessageUser(currentUser, "Profil sozlamalari ⚙️", true, userActivity);
                 } else if (text.equals("Bosh menu")) {
                     userActivity.setRound(0);
-                    sendMessageUser(currentUser, "Bosh menuga qaytdingiz", true, userActivity);
+                    sendMessageUser(currentUser, "Bosh menuga qaytdingiz 👋", true, userActivity);
                 } else {
                     for (Food food : DB.footList()) {
                         if (text.equals(food.getName())) {
-                            userFood.setFoodId(food.getId());
-                            userFood.setUserId(currentUser.getId());
-                            userFood.setKuni(LocalDateTime.now());
-                            DB.addFoodToUser(userFood);
-                            sendMessageUser(currentUser, "Ovqat belgilandi", true, userActivity);
-                            userActivity.setRound(5);
+                            if (DB.isAddFoodUser(currentUser.getFullName())){
+                                LocalDateTime localDateTime = LocalDateTime.now();
+                                LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
+                                LocalTime localTime = LocalTime.of(20, 0, 0);
+                                if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
+                                    userFood.setFoodName(food.getName());
+                                    userFood.setUserFullName(currentUser.getFullName());
+                                    userFood.setKuni(LocalDateTime.now());
+                                    userFood.setUserPosition(currentUser.getPosition());
+                                    DB.addFoodToUser(userFood);
+                                    sendMessageUser(currentUser, "Ovqat belgilandi : " + food.getName() + " : " + localDateTime.getDayOfMonth()+":"+localDateTime.getMonthValue()+":"+localDateTime.getYear()
+                                            +"  "+localDateTime.getHour()+":"+ localDateTime.getMinute()+" ✅", true, userActivity);
+
+                                    userActivity.setRound(5);
+                                } else {
+                                    sendMessageUser(currentUser, "Ovqat tanlashga ulgurmadingiz 😞", true, userActivity);
+                                    userActivity.setRound(5);
+                                }
+                            } else {
+                                sendMessageUser(currentUser, "Tanlab bo'lgansiz ❌", true, userActivity);
+                                userActivity.setRound(5);
+                            }
                         }
                     }
-
                 }
             }
         }
-
     }
+
+    public void aa() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
+        LocalTime localTime = LocalTime.of(10, 0, 0);
+//        LocalDateTime localDateTime1 = LocalDateTime.of(localDate ,localTime );
+        if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
+            System.out.println("kirdi");
+        } else System.out.println("kirmadi");
+    }
+
+
 //
 //    private void chooseFood(User currentUser, Update update, UserActivity userActivity) {
 //        if (update.hasMessage() && update.getMessage().hasText()) {
@@ -176,6 +209,7 @@ public class UserService {
             e.printStackTrace();
         }
     }
+
 //    public int getUserRound(User currentUser) {
 //        UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
 //        return userActivity.getRound();

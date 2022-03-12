@@ -84,33 +84,32 @@ public class HelperMethods {
         if (round >= 5) {
             switch (currentUser.getUserStatus()) {
                 case "USER":
-                    row1.add("Vaqt oralig'ini tanlash");
+//                    row1.add("Vaqt oralig'ini tanlash");
                     row1.add("Bugungi ovqatlar");
-                    row2.add("Buyurtmamni bekor qilish");
+//                    row2.add("Buyurtmamni bekor qilish");
                     row2.add("Settings");
                     rowList.add(row1);
                     rowList.add(row2);
                     break;
                 case "ADMIN":
-                    row1.add("Vaqt oralig'ini tanlash");
+//                    row1.add("Vaqt oralig'ini tanlash");
+//                    row2.add("Buyurtmamni bekor qilish");
+//                    rowN.add("Bugunli ro'yxatni korish");
                     row1.add("Bugungi ovqatlar");
-                    row2.add("Buyurtmamni bekor qilish");
                     row2.add("Settings");
-                    rowN.add("Bugunli ro'yxatni korish");
                     rowN.add("Ro'yxatni HR ga jo'natish");
                     rowList.add(row1);
                     rowList.add(row2);
                     rowList.add(rowN);
                     break;
                 case "HR":
-                    row1.add("Bugungi ro'yxatni korish");
+                    row1.add("Bugungi ovqatlar");
                     row1.add("Ro'yxatni qubul qilish");
                     row2.add("Ro'yxatni exelga chiqarish");
                     row2.add("Settings");
                     rowList.add(row1);
                     rowList.add(row2);
                     break;
-
             }
         }
         return keyboardMarkup;
@@ -124,6 +123,8 @@ public class HelperMethods {
             return userActivity.getRound();
         }
     }
+
+
 
 }
 

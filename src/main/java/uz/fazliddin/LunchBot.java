@@ -2,6 +2,7 @@ package uz.fazliddin;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 import uz.fazliddin.model.Food;
 import uz.fazliddin.model.User;
 import uz.fazliddin.model.UserActivity;
@@ -22,9 +23,9 @@ public class LunchBot extends TelegramLongPollingBot {
     //    RoundMethods roundMethods = new RoundMethods();
     HelperMethods helperMethods = new HelperMethods();
     RegistrationService registrationService = new RegistrationService();
-    UserService userService = new UserService();
-    HrService hrService = new HrService();
-    AdminService adminService = new AdminService();
+//    UserService userService = new UserService();
+//    HrService hrService = new HrService();
+//    AdminService adminService = new AdminService();
 
     @Override
     public String getBotUsername() {
@@ -38,7 +39,6 @@ public class LunchBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
         User currentUser = DataBase.getUserFromList(update);
         UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
         UserActivity userActivityForUser = new UserActivity();// boshlanishi 0 dan boshlanadi
@@ -53,11 +53,15 @@ public class LunchBot extends TelegramLongPollingBot {
                     break;
                 case "HR":
                     //  todo hr serviceni qilish kerak
+                    HrService hrService = new HrService();
+                    UserFood userFoodHr = new UserFood();
+                    hrService.hrServiceMainMethod(currentUser , update , userActivity , userFoodHr);
                     break;
                 case "ADMIN":
-                    //  todo admin serviceni qilish kerak
+                    AdminService adminService = new AdminService();
+                    UserFood userFoodAdmin = new UserFood();
+                    adminService.adminServiceMainMethod(currentUser , update , userActivityForUser , userFoodAdmin);
                     break;
-
             }
 //            helperMethods.sendMessage(currentUser, "Asosiy Menu", true);
         } else {
