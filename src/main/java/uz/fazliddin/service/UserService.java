@@ -51,7 +51,7 @@ public class UserService {
                         sendMessageUser(currentUser , "Bugungi ovqatlar ro'yxati bo'sh ekan ❌" , true , userActivity);
                     }else {
                         userActivity.setRound(1);
-                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲", true, userActivity);
+                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲\nTanlab ustiga bosing 👇", true, userActivity);
                     }
                 }
 //                else if (text.equals("Vaqt oralig'ini tanlash")) {
@@ -70,7 +70,7 @@ public class UserService {
                             if (DB.isAddFoodUser(currentUser.getFullName())){
                                 LocalDateTime localDateTime = LocalDateTime.now();
                                 LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
-                                LocalTime localTime = LocalTime.of(20, 0, 0);
+                                LocalTime localTime = LocalTime.of(10, 0, 0);
                                 if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
                                     userFood.setFoodName(food.getName());
                                     userFood.setUserFullName(currentUser.getFullName());

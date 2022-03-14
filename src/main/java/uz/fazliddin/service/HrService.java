@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Fazliddin Xamdamov
@@ -30,6 +31,7 @@ import java.util.List;
  * @project New-Lunch-Bot2
  */
 public class HrService {
+
     public void hrServiceMainMethod(User currentUser, Update update, UserActivity userActivity ,  UserFood userFood) {
         if (update.hasMessage()) {
             Message message = update.getMessage();
@@ -48,7 +50,7 @@ public class HrService {
                         sendMessageUser(currentUser, "Bugungi ovqatlar ro'yxati bo'sh ekan ❌", true, userActivity);
                     } else {
                         userActivity.setRound(1);
-                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲", true, userActivity);
+                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲\nTanlab ustiga bosing 👇", true, userActivity);
                     }
                 } else if (text.equals("Settings")) {
                     userActivity.setRound(3);
@@ -56,30 +58,42 @@ public class HrService {
                 } else if (text.equals("Bosh menu")) {
                     userActivity.setRound(0);
                     sendMessageUser(currentUser, "Bosh menuga qaytdingiz 👋", true, userActivity);
-                } else if (text.equals("Ro'yxatni HR ga jo'natish")) {
-                    userActivity.setRound(6);
-                    FileService fileService = new FileService();
-                    fileService.keepToExel(DB.userFoodList());
-                    sendDocumentUser(DB.getUserFromPosition("HR"));
-                    sendMessageUser(currentUser, "Bugungi ro'yxatni HR ga yuborildi 📤.", true, userActivity);
-                } else {
+                }else if (text.equals("Buyurtma berilgan ovqatlarning soni")) {
+                    if (!DB.userFoodList().isEmpty()){
+                        userActivity.setRound(7);
+                        sendMessageUser(currentUser, "Ovqatlar soni", false, userActivity);
+                        // soni todo qilish kerak hr bu ovqatdan qanhaligini bilishi kerak.
+                        Map<String, Integer> map = DB.foodQuantity(DB.userFoodList());
+                        StringBuilder builder = new StringBuilder();
+                        map.forEach((ovqat, soni) -> builder.append(ovqat).append(" : ").append(soni).append("\n"));
+                        sendMessageUser(currentUser, builder.toString(), true, userActivity);
+                    }else {
+                        userActivity.setRound(0);
+                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yxati hozircha bo'sh ekan ❌", true, userActivity);
+                    }
+                }else {
                     for (Food food : DB.footList()) {
                         if (text.equals(food.getName())) {
-                            LocalDateTime localDateTime = LocalDateTime.now();
-                            LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
-                            LocalTime localTime = LocalTime.of(10, 0, 0);
-                            if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
-                                userFood.setFoodName(food.getName());
-                                userFood.setUserFullName(currentUser.getFullName());
-                                userFood.setUserPosition(currentUser.getPosition());
-                                userFood.setKuni(LocalDateTime.now());
+                            if (DB.isAddFoodUser(currentUser.getFullName())){
+                                LocalDateTime localDateTime = LocalDateTime.now();
+                                LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
+                                LocalTime localTime = LocalTime.of(10, 0, 0);
+                                if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
+                                    userFood.setFoodName(food.getName());
+                                    userFood.setUserFullName(currentUser.getFullName());
+                                    userFood.setKuni(LocalDateTime.now());
+                                    userFood.setUserPosition(currentUser.getPosition());
+                                    DB.addFoodToUser(userFood);
+                                    sendMessageUser(currentUser, "Ovqat belgilandi : " + food.getName() + " : " + localDateTime.getDayOfMonth()+":"+localDateTime.getMonthValue()+":"+localDateTime.getYear()
+                                            +"  "+localDateTime.getHour()+":"+ localDateTime.getMinute()+" ✅", true, userActivity);
 
-                                // bu joyda user ovqat tanlaganda databasega qo'shadigan joyi
-                                DB.addFoodToUser(userFood);
-                                sendMessageUser(currentUser, "Ovqat belgilandi : " + food.getName() + " : " + localDateTime, true, userActivity);
-                                userActivity.setRound(5);
+                                    userActivity.setRound(5);
+                                } else {
+                                    sendMessageUser(currentUser, "Ovqat tanlashga ulgurmadingiz 😞", true, userActivity);
+                                    userActivity.setRound(5);
+                                }
                             } else {
-                                sendMessageUser(currentUser, "Ovqat tanlashga ulgurmadingiz 😞", true, userActivity);
+                                sendMessageUser(currentUser, "Tanlab bo'lgansiz ❌", true, userActivity);
                                 userActivity.setRound(5);
                             }
                         }
@@ -87,7 +101,6 @@ public class HrService {
                 }
             }
         }
-
     }
 
     private ReplyKeyboard getReplyKeyBoard(User currentUser, UserActivity userActivity) {
@@ -106,10 +119,11 @@ public class HrService {
             case 0:
                 row1.add("Bugungi ovqatlar");
                 row2.add("Settings");
-                rowN.add("Bugungi ro'yxatni olish");
+//                rowN.add("Bugungi ro'yxatni olish");
+                row3.add("Buyurtma berilgan ovqatlarning soni");
                 rowList.add(row1);
                 rowList.add(row2);
-                rowList.add(rowN);
+                rowList.add(row3);
                 break;
             case 1:
                 List<Food> foods = DB.footList();

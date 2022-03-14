@@ -10,8 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Fazliddin Xamdamov
@@ -243,6 +242,25 @@ public class DB {
         }
         return res;
     }
+
+
+    // Hozirgi vaqtgacha bo'lgan odamlar zakas qilgan ovqatlari , tuziga qarab soni
+
+    public static Map<String , Integer> foodQuantity(List<UserFood> userFoodsList){
+        Map<String , Integer> map = new TreeMap<>();
+
+        for (UserFood userFood : userFoodsList) {
+            Integer older = map.get(userFood.getFoodName());
+            if (older == null) older = 0;
+            map.put(userFood.getFoodName() , older + 1);
+        }
+        return map;
+    }
+
+
+
+
+
 
 
 }

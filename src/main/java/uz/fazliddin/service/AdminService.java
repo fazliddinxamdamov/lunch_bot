@@ -2,7 +2,6 @@ package uz.fazliddin.service;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -49,7 +48,7 @@ public class AdminService {
                         sendMessageUser(currentUser, "Bugungi ovqatlar ro'yxati bo'sh ekan ❌", true, userActivity);
                     } else {
                         userActivity.setRound(1);
-                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲", true, userActivity);
+                        sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲\nTanlab ustiga bosing 👇", true, userActivity);
                     }
                 } else if (text.equals("Settings")) {
                     userActivity.setRound(3);
@@ -66,24 +65,30 @@ public class AdminService {
                 } else {
                     for (Food food : DB.footList()) {
                         if (text.equals(food.getName())) {
+//                            if (DB.isAddFoodUser(currentUser.getFullName())){
                             LocalDateTime localDateTime = LocalDateTime.now();
                             LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
-                            LocalTime localTime = LocalTime.of(11, 0, 0);
+                            LocalTime localTime = LocalTime.of(20, 0, 0);
                             if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
                                 userFood.setFoodName(food.getName());
                                 userFood.setUserFullName(currentUser.getFullName());
-                                userFood.setUserPosition(currentUser.getPosition());
                                 userFood.setKuni(LocalDateTime.now());
-
-                                // bu joyda user ovqat tanlaganda databasega qo'shadigan joyi
+                                userFood.setUserPosition(currentUser.getPosition());
                                 DB.addFoodToUser(userFood);
-                                sendMessageUser(currentUser, "Ovqat belgilandi : " + food.getName() + " : " + localDateTime, true, userActivity);
+                                sendMessageUser(currentUser, "Ovqat belgilandi : " + food.getName() + " : " + localDateTime.getDayOfMonth() + ":" + localDateTime.getMonthValue() + ":" + localDateTime.getYear()
+                                        + "  " + localDateTime.getHour() + ":" + localDateTime.getMinute() + " ✅", true, userActivity);
+
                                 userActivity.setRound(5);
                             } else {
                                 sendMessageUser(currentUser, "Ovqat tanlashga ulgurmadingiz 😞", true, userActivity);
                                 userActivity.setRound(5);
                             }
                         }
+//                        else {
+//                                sendMessageUser(currentUser, "Tanlab bo'lgansiz ❌", true, userActivity);
+//                                userActivity.setRound(5);
+//                            }
+//                    }  // bu joyda admin soat 11 gacha ovqat buyurtma bera oladi va ko'plab ovqatlar buyurtma berishi mumkin
                     }
                 }
             }

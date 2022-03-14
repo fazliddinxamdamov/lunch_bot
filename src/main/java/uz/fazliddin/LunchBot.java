@@ -55,7 +55,7 @@ public class LunchBot extends TelegramLongPollingBot {
                     //  todo hr serviceni qilish kerak
                     HrService hrService = new HrService();
                     UserFood userFoodHr = new UserFood();
-                    hrService.hrServiceMainMethod(currentUser , update , userActivity , userFoodHr);
+                    hrService.hrServiceMainMethod(currentUser , update , userActivityForUser , userFoodHr);
                     break;
                 case "ADMIN":
                     AdminService adminService = new AdminService();
