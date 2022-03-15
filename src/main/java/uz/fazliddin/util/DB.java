@@ -1,6 +1,7 @@
 package uz.fazliddin.util;
 
 import uz.fazliddin.model.Food;
+import uz.fazliddin.model.GeneralFood;
 import uz.fazliddin.model.User;
 import uz.fazliddin.model.UserFood;
 
@@ -170,6 +171,19 @@ public class DB {
         return foods;
     }
 
+    public static void addFoodToToday(Food food){
+        Connection connection = DbConnect.getConnection();
+        try {
+            assert connection != null;
+            PreparedStatement preparedStatement = connection.prepareStatement("insert into foods( full_name, kuni) values (?,?)");
+            preparedStatement.setString(1, food.getName());
+            preparedStatement.setObject(2, food.getTimestamp());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Food getFood(Integer id) {
         Connection connection = DbConnect.getConnection();
         PreparedStatement preparedStatement = null;
@@ -187,6 +201,25 @@ public class DB {
             e.printStackTrace();
         }
         return food;
+    }
+
+    public static List<GeneralFood> generalFoodList(){
+        Connection connection = DbConnect.getConnection();
+        PreparedStatement preparedStatement = null;
+        List<GeneralFood> foods = new ArrayList<>();
+        try {
+            assert connection != null;
+            preparedStatement = connection.prepareStatement("select * from general_foods");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                foods.add(new GeneralFood(
+                        resultSet.getInt(1),
+                        resultSet.getString(2)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return foods;
     }
 
 

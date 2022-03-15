@@ -1,7 +1,10 @@
 package uz.fazliddin;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 import uz.fazliddin.model.Food;
 import uz.fazliddin.model.User;
@@ -20,12 +23,8 @@ import static uz.fazliddin.util.Constants.USERNAME;
  */
 public class LunchBot extends TelegramLongPollingBot {
 
-    //    RoundMethods roundMethods = new RoundMethods();
     HelperMethods helperMethods = new HelperMethods();
     RegistrationService registrationService = new RegistrationService();
-//    UserService userService = new UserService();
-//    HrService hrService = new HrService();
-//    AdminService adminService = new AdminService();
 
     @Override
     public String getBotUsername() {
@@ -42,7 +41,6 @@ public class LunchBot extends TelegramLongPollingBot {
         User currentUser = DataBase.getUserFromList(update);
         UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
         UserActivity userActivityForUser = new UserActivity();// boshlanishi 0 dan boshlanadi
-//        userActivityForUser.setChoice("ovqat");
 
         if (currentUser.isRegister()) {
             switch (currentUser.getUserStatus()) {
@@ -63,7 +61,6 @@ public class LunchBot extends TelegramLongPollingBot {
                     adminService.adminServiceMainMethod(currentUser , update , userActivityForUser , userFoodAdmin);
                     break;
             }
-//            helperMethods.sendMessage(currentUser, "Asosiy Menu", true);
         } else {
             if (currentUser.getPhoneNumber() != null && update.getMessage().hasText() && update.getMessage().getText().equals("/start")) {
                 userActivity.setRound(5);
@@ -75,20 +72,5 @@ public class LunchBot extends TelegramLongPollingBot {
                 registrationService.startRegistration(currentUser, update, userActivity);
             }
         }
-        // user bo'lsa
-//        if (currentUser.isRegister()) {
-//            if (currentUser.getUserStatus().equals("USER")) {
-//                userActivity.setRound(0);
-//                userService.userServiceMainMethod(currentUser, update, userActivity);
-//            } else if (currentUser.getUserStatus().equals("ADMIN")) {
-//                UserActivity userActivityAdmin = new UserActivity();
-//                userActivityAdmin.setRound(0);
-//                adminService.adminServiceMainMethod(currentUser,update,userActivityAdmin);
-//            } else if (currentUser.getUserStatus().equals("HR")){
-//                UserActivity userActivityAdmin = new UserActivity();
-//                userActivityAdmin.setRound(0);
-//                hrService.adminServiceMainMethod(currentUser,update,userActivityAdmin);
-//            }
-//        }
      }
 }

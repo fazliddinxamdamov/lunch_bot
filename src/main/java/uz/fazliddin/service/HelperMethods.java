@@ -30,7 +30,6 @@ public class HelperMethods {
             sendMessage.setReplyMarkup(getReplyKeyBoard(currentUser));
         }
         sendMessage.setText(text);
-
         try {
             myBot.execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -65,53 +64,32 @@ public class HelperMethods {
                 row1.add("Marketing");
                 row2.add("ECMA");
                 row2.add("Unicorn");
+                row3.add("Sales");
+                row3.add("Reception");
+                rowN.add("Va Boshqalar");
                 rowList.add(row1);
                 rowList.add(row2);
+                rowList.add(row3);
+                rowList.add(rowN);
                 break;
             case 4:
                 row1.add("Mentor");
-                row1.add("Asistent");
-                row1.add("Manager");
-                row1.add("HR");
+                row1.add("Assistant");
+                row1.add("Marketing Manager");
+                row2.add("Sales Manager");
                 row2.add("CEO");// todo Lavozimlarni to'ldirish kerak
                 row2.add("ECMA");
-                row2.add("Buxgalter");
-                row2.add("Va boshqalar");
+                row3.add("Buxgalter");
+                row3.add("AXO");
+                row3.add("Unicorn Manager");
+                rowN.add("Va Boshqalar");
                 rowList.add(row1);
                 rowList.add(row2);
+                rowList.add(row3);
+                rowList.add(rowN);
                 break;
         }
-        if (round >= 5) {
-            switch (currentUser.getUserStatus()) {
-                case "USER":
-//                    row1.add("Vaqt oralig'ini tanlash");
-                    row1.add("Bugungi ovqatlar");
-//                    row2.add("Buyurtmamni bekor qilish");
-                    row2.add("Settings");
-                    rowList.add(row1);
-                    rowList.add(row2);
-                    break;
-                case "ADMIN":
-//                    row1.add("Vaqt oralig'ini tanlash");
-//                    row2.add("Buyurtmamni bekor qilish");
-//                    rowN.add("Bugunli ro'yxatni korish");
-                    row1.add("Bugungi ovqatlar");
-                    row2.add("Settings");
-                    rowN.add("Ro'yxatni HR ga jo'natish");
-                    rowList.add(row1);
-                    rowList.add(row2);
-                    rowList.add(rowN);
-                    break;
-                case "HR":
-                    row1.add("Bugungi ovqatlar");
-                    row1.add("Ro'yxatni qubul qilish");
-                    row2.add("Ro'yxatni exelga chiqarish");
-                    row2.add("Settings");
-                    rowList.add(row1);
-                    rowList.add(row2);
-                    break;
-            }
-        }
+        // bu joyda roundga 5 yoki 5 dan kichik bo'lsa user positioniga qarab menu buttonlar chiqayotgandi.
         return keyboardMarkup;
     }
 
@@ -123,8 +101,4 @@ public class HelperMethods {
             return userActivity.getRound();
         }
     }
-
-
-
 }
-
