@@ -13,7 +13,6 @@ import uz.fazliddin.model.Food;
 import uz.fazliddin.model.User;
 import uz.fazliddin.model.UserActivity;
 import uz.fazliddin.model.UserFood;
-import uz.fazliddin.service.templete.Keyboard;
 import uz.fazliddin.util.DB;
 
 import java.time.LocalDate;
@@ -29,10 +28,7 @@ import java.util.List;
  */
 public class UserService {
 
-    Keyboard keyboard = new Keyboard();
-
     public void userServiceMainMethod(User currentUser, Update update, UserActivity userActivity, UserFood userFood) {
-
         if (update.hasMessage()) {
             Message message = update.getMessage();
             SendMessage sendMessage = new SendMessage();
@@ -41,7 +37,6 @@ public class UserService {
                 String text = message.getText();
                 if (text.equals("/start")) {
                     sendMessageUser(currentUser, "Asosiy menu", true, userActivity);
-//                    sendMessage.setReplyMarkup(getReplyKeyBoard(currentUser, userActivity));
                 } else if (text.equals("Orqaga")) {
                     sendMessageUser(currentUser, "Orqaga yurdingiz 🔙", true, userActivity);
                     userActivity.setRound(userActivity.getRound() - 1);
@@ -54,10 +49,6 @@ public class UserService {
                         sendMessageUser(currentUser, "Bugungi ovqatlar ro'yhati 🍲\nTanlab ustiga bosing 👇", true, userActivity);
                     }
                 }
-//                else if (text.equals("Vaqt oralig'ini tanlash")) {
-//                    userActivity.setRound(2);
-//                    sendMessageUser(currentUser, "Qaysi vaqtda ovqatlanishingiz", true, userActivity);
-//                }
                 else if (text.equals("Settings")) {
                     userActivity.setRound(3);
                     sendMessageUser(currentUser, "Profil sozlamalari ⚙️", true, userActivity);
@@ -79,7 +70,6 @@ public class UserService {
                                     DB.addFoodToUser(userFood);
                                     sendMessageUser(currentUser, "Ovqat belgilandi : " + food.getName() + " : " + localDateTime.getDayOfMonth()+":"+localDateTime.getMonthValue()+":"+localDateTime.getYear()
                                             +"  "+localDateTime.getHour()+":"+ localDateTime.getMinute()+" ✅", true, userActivity);
-
                                     userActivity.setRound(5);
                                 } else {
                                     sendMessageUser(currentUser, "Ovqat tanlashga ulgurmadingiz 😞", true, userActivity);
@@ -96,26 +86,6 @@ public class UserService {
         }
     }
 
-    public void aa() {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        LocalDate localDate = LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth());
-        LocalTime localTime = LocalTime.of(10, 0, 0);
-//        LocalDateTime localDateTime1 = LocalDateTime.of(localDate ,localTime );
-        if (localDateTime.getDayOfMonth() == localDate.getDayOfMonth() && localDateTime.getHour() < localTime.getHour()) {
-            System.out.println("kirdi");
-        } else System.out.println("kirmadi");
-    }
-
-
-//
-//    private void chooseFood(User currentUser, Update update, UserActivity userActivity) {
-//        if (update.hasMessage() && update.getMessage().hasText()) {
-//            currentUser.setDepartment(update.getMessage().getText());
-//            userActivity.setRound(2);
-//            sendMessageUser(currentUser, "ovqatlar ro'yxati:", true, userActivity);
-//        }
-//    }
-
     private ReplyKeyboard getReplyKeyBoard(User currentUser, UserActivity userActivity) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setResizeKeyboard(true);
@@ -130,8 +100,6 @@ public class UserService {
 
         switch (userActivity.getRound()) {
             case 0:
-//                row1.add("Vaqt oralig'ini tanlash");
-//                row2.add("Buyurtmamni bekor qilish");
                 row1.add("Bugungi ovqatlar");
                 row2.add("Settings");
                 rowList.add(row1);
@@ -165,19 +133,6 @@ public class UserService {
                     rowList.add(rowN);
                 }
                 break;
-//            case 2:
-//                row1.add("12:00 | 12:20");
-//                row1.add("12:20 | 12:40");
-//                row2.add("12:40 | 13:00");
-//                row2.add("13:00 | 13:20");
-//                row3.add("13:20 | 13:40");
-//                row3.add("13:40 | 14:00");
-//                rowN.add("Orqaga");
-//                rowList.add(row1);
-//                rowList.add(row2);
-//                rowList.add(row3);
-//                rowList.add(rowN);
-//                break;
             case 3:
                 row1.add("Hozircha sozlamalar paneli ishga tushgani yo'q! :( ");
                 rowN.add("Orqaga");
@@ -209,9 +164,4 @@ public class UserService {
             e.printStackTrace();
         }
     }
-
-//    public int getUserRound(User currentUser) {
-//        UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
-//        return userActivity.getRound();
-//    }
 }

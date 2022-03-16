@@ -17,5 +17,4 @@ public class Constants {
     // HR  =>  30-40;                // bu role qarab berilgan roundlar chalkashib ketmaslik uchun.
     // ADMIN  =>  50-60;
     // COOK => 80-90
-
 }

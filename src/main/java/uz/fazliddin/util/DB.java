@@ -1,9 +1,7 @@
 package uz.fazliddin.util;
 
-import uz.fazliddin.model.Food;
-import uz.fazliddin.model.GeneralFood;
-import uz.fazliddin.model.User;
-import uz.fazliddin.model.UserFood;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import uz.fazliddin.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +17,35 @@ import java.util.*;
  * @project New-Lunch-Bot2
  */
 public class DB {
+
+    public static Map<String , UserActivity> userActivityMap = new HashMap<>();
+
+    public static User getUserFromList(Update update){
+        if(update.hasMessage()){
+            for (User user : allUser()) {
+                if (user.getChatId().equals(update.getMessage().getChatId().toString())){
+                    return user;
+                }
+            }
+        } else if (update.hasCallbackQuery()){
+            for (User user : allUser()) {
+                if (user.getChatId().equals(update.getCallbackQuery().getMessage().getChatId().toString())){
+                    return user;
+                }
+            }
+        }
+
+        User newUser = new User();
+        newUser.setFullName(update.getMessage().getFrom().getFirstName());
+        newUser.setChatId(update.getMessage().getChatId().toString());
+
+        DataBase.userActivityMap.put(newUser.getChatId(), new UserActivity());
+
+        allUser().add(newUser);
+        return newUser;
+    }
+
+
 
     // USER
 
@@ -126,7 +153,7 @@ public class DB {
         User user = new User();
         try {
             assert connection != null;
-            preparedStatement = connection.prepareStatement("select * from users where position = " + positionName);
+            preparedStatement = connection.prepareStatement("select * from users where position = " + "'"+ positionName+"'");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 user.setId(resultSet.getInt(1));

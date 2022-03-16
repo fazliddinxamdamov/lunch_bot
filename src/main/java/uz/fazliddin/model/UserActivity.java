@@ -14,11 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 public class UserActivity {
-
     private Integer round = 0;
-//    private String choice;
-
-
     public void setRound(Integer round) {
         this.round = round;
     }

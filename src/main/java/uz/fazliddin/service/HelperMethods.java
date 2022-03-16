@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import uz.fazliddin.LunchBot;
 import uz.fazliddin.model.User;
 import uz.fazliddin.model.UserActivity;
-import uz.fazliddin.util.DataBase;
+import uz.fazliddin.util.DB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +97,7 @@ public class HelperMethods {
         if (currentUser.isRegister()){
             return currentUser.getRound();
         }else {
-            UserActivity userActivity = DataBase.userActivityMap.get(currentUser.getChatId());
+            UserActivity userActivity = DB.userActivityMap.get(currentUser.getChatId());
             return userActivity.getRound();
         }
     }

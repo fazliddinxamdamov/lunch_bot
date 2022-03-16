@@ -62,7 +62,6 @@ public class HrService {
                     if (!DB.userFoodList().isEmpty()){
                         userActivity.setRound(7);
                         sendMessageUser(currentUser, "Ovqatlar soni", false, userActivity);
-                        // soni todo qilish kerak hr bu ovqatdan qanhaligini bilishi kerak.
                         Map<String, Integer> map = DB.foodQuantity(DB.userFoodList());
                         StringBuilder builder = new StringBuilder();
                         map.forEach((ovqat, soni) -> builder.append(ovqat).append(" : ").append(soni).append("\n"));
@@ -181,18 +180,6 @@ public class HrService {
         }
         try {
             myBot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendDocumentUser(User currentUser) {
-        LunchBot myBot = new LunchBot();
-        SendDocument sendDocument = new SendDocument();
-        sendDocument.setDocument(new InputFile(new File("src/main/resources/royxat.xlsx")));
-        sendDocument.setChatId(currentUser.getChatId());
-        try {
-            myBot.execute(sendDocument);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
